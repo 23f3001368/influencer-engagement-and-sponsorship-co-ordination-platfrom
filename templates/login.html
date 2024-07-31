@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block body %}
+{% include 'nav.html' %}
+<form method="POST">
+    <div>Login as 
+    <input type="radio" name="role" value="Admin" id="admin">
+    <label for="admin">Admin</label>
+
+    <input type="radio" name="role" value="Influencer" id="influencer">
+    <label for="influencer">Influencer</label>
+    <input type="radio" name="role" value="Sponsor" id="sponsor">
+    <label for="sponsor">Sponsor</label>
+    </div>
+    <label for="uname" class="form-label">Username:</label>
+    <input type="text" id="uname" name="username" class="form-control">
+    <label for="upass" class="form-label">Password:</label>
+    <input type="text" id="upass" name="upassword" class="form-control">
+    <input type="submit" value="Submit" class="btn btn-success">
+    <div>or register new</div>
+    <input type="button">
+</form>
+{% endblock %}
