@@ -1,0 +1,6 @@
+
+table influencer: name passwd flag: bool category niche reach: integer
+table admin: name passwd
+table sponsor: name passwd industry flag
+table campaign: id name desc startdate enddate visibility flag goals sponsor.name
+table adreqs: id name desc campaign.id influencer.name amount requirements status flag

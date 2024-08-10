@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block body %}
+ {% include 'nav.html' %}
+
+ <form method="POST">
+    <span>register as sponsor<br></span>
+        <label for="suname" class="form-label">Username:</label>
+    <input type="text" id="suname" name="susername" class="form-control" required>
+    <label for="supass" class="form-label">Password:</label>
+    <input type="text" id="supass" name="spassword" class="form-control" required>
+    <label for="sindustry" class="form-label">Industry:</label>
+    <input type="text" id="sindustry" name="sindustry" class="form-control" required>
+    <input type="submit" value="Submit" class="btn btn-success"></form>
+{% endblock %}

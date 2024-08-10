@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+table influencer: name passwd flag: bool category niche reach: integer
+{% block body %}
+ {% include 'nav.html' %}
+
+ <form method="POST">
+    <span>register as influencer<br></span>
+        <label for="iuname" class="form-label">Username:</label>
+    <input type="text" id="iuname" name="iusername" class="form-control" required>
+    <label for="iupass" class="form-label">Password:</label>
+    <input type="text" id="iupass" name="iupassword" class="form-control" required>
+        <label for="icategory" class="form-label">Category:</label>
+    <input type="text" id="icategory" name="icategory" class="form-control" required>
+    <label for="iniche" class="form-label">Niche:</label>
+    <input type="text" id="iniche" name="iniche" class="form-control">
+    <label for="ireach" class="form-label">Reach:</label>
+    <input type="text" id="ireach" name="ireach" class="form-control">
+    <input type="submit" value="Submit" class="btn btn-success">
+ </form>
+
+ 
+      
+ 
+
+{% endblock%}
