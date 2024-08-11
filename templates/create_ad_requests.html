@@ -2,7 +2,7 @@
 
 {% block body %}
 {% include 'sponsor_nav.html'   %}
-{{campaign_list}}
+
 <form    method="POST">
     <label for="name" class="form-label">Ad Request Name:</label>
     <input type="text" id="name" name="name" class="form-control" required>
@@ -12,12 +12,9 @@
     <input type="text" id="requires" name="requires" class="form-control" required>
     <label for="amount" class="form-label">Amount:</label>
     <input type="text" id="amount" name="amount" class="form-control" required>
-    <label for="campaign" class="form-label">Select Campaign:</label>
-    <select id="campaign" name="campaign" class="form-control" required>
-        {% for a in campaign_namelist %}
-            <option value="{{a}}">{{a}}</option>
-        {% endfor %}
-    </select>
+    <label for="campaigni" class="form-label">Select Campaign:</label>
+    <input type="text" id="campaigni" name="campaigni" class="form-control" required>
+    
     <input type="submit" value="Submit" class="btn btn-success">
     
 {% endblock %}

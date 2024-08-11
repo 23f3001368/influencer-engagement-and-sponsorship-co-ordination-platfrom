@@ -3,6 +3,16 @@
 {% include 'sponsor_nav.html'   %}
 
 Active campaigns:
+{% for a in campaigns %}
+    <h3>{{a.name}}</h3>
+    {% for b in adrequests %}
+    {% if b.campaign_name == a.name %}
+    {{b.name}}
 
+        
+    {% endif %}
+        
+    {% endfor %}
+{% endfor %}
 
 {% endblock %}

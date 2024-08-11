@@ -1,11 +1,13 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+app.config["SESSION_TYPE"] = "filesystem"
 db = SQLAlchemy(app)
-
+Session(app)
 
 # tables 
 
@@ -75,8 +77,7 @@ def login_to():
     username = request.form.get('username')
     password = request.form.get('upassword')
     category = request.form.get('role')
-    global current_user
-    current_user = username
+    session['username']=username
     
     if category == 'Influencer':
         user = influencer.query.filter_by(name=username, passwd=password).first()
@@ -95,7 +96,9 @@ def login_to():
 
     
 
-
+@app.route('/Already_exists')
+def already_exists():
+    return render_template('already_exists.html')
 
 @app.route('/iregister')
 def iregister():
@@ -108,10 +111,13 @@ def iregister_to():
     category = request.form.get('icategory')
     niche = request.form.get('iniche')
     reach = request.form.get('ireach')
-    user = influencer(name=username,passwd=password,category=category,niche=niche,reach=reach)
-    db.session.add(user)
-    db.session.commit()
-    return redirect('/login')
+    if influencer.query.filter_by(name=username).first():
+        return redirect('/already_exists')
+    else:
+        user = influencer(name=username,passwd=password,category=category,niche=niche,reach=reach)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/login')
 
 @app.route('/influencer')
 def influencer_main():
@@ -133,17 +139,22 @@ def sregister_to():
     username=request.form.get('susername')
     password=request.form.get('spassword')
     industry=request.form.get('industry')
-    user = sponsor(name=username,passwd=password,industry=industry)
-    db.session.add(user)
-    db.session.commit()
-    return redirect('/login')
+    if sponsor.query.filter_by(name=username).first():
+        return redirect('/already_exists')
+    else: 
+        user = sponsor(name=username,passwd=password,industry=industry)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/login')
 
 
 
 
 @app.route('/sponsor')
 def sponsor_main():
-    
+    campaigns=campaign.query.filter_by(sponsor_name=session.get('username')).all()
+    adrequests = adreqs.query.all()
+
     
 
 
@@ -162,7 +173,7 @@ def create_campaign_post():
     enddate = datetime.datetime(int(request.form.get('end').split('-')[0]),int(request.form.get('end').split('-')[1]),int(request.form.get('end').split('-')[2]))
     visibility = True
     goals = request.form.get('goal')
-    sponsor_name = current_user
+    sponsor_name = session.get('username')
     campaignn = campaign(name=name,desc=desc,startdate=startdate,enddate=enddate,visibility=visibility,goals=goals,sponsor_name=sponsor_name)
     db.session.add(campaignn)
     db.session.commit()
@@ -172,20 +183,17 @@ def create_campaign_post():
 def create_ad_requests():
     return render_template('create_ad_requests.html')
 
-@app.route('/sponsor/create_ad_requests',methods=['POST'])
+@app.route('/sponsor/create_ad_request',methods=['POST'])
 def create_ad_requests_post():
     campaign_list = campaign.query.all()
     
-    for campaigni in campaign_list:
-        campaing_namelist.append(campaigni.name)
-
 
     name = request.form.get('name')
     desc = request.form.get('desc')
     campaign_name = request.form.get('campaigni')
     influencer_name = None
     amount = request.form.get('amount')
-    requirements = request.form.get('requirements')
+    requirements = request.form.get('requires')
     status = 'Pending'
     adreq = adreqs(name=name,desc=desc,campaign_name=campaign_name,influencer_name=influencer_name,amount=amount,requirements=requirements,status=status)
     db.session.add(adreq)
@@ -195,12 +203,15 @@ def create_ad_requests_post():
 
 @app.route('/sponsor/find_influencer')
 def find_inf():
-    pass
+    infs=influencer.query.all()
+
+    return render_template('sponsor_find_inf.html')
 
 @app.route('/sponsor/stats')
 def sponsor_stats():
-    pass
-
+    campaign_list = campaign.query.filter_by(sponsor_name=session.get('username')).all()
+    total_cams= len(campaign_list)
+    return render_template('sponsor_stats.html')
 
 @app.route('/admin')
 def admin_main():
