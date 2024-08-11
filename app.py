@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -27,9 +28,8 @@ class sponsor(db.Model):
     flag = db.Column(db.Boolean, default=False)
 
 class campaign(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    desc = db.Column(db.String(50))
+    name = db.Column(db.String(50), primary_key=True)
+    desc = db.Column(db.String(200))
     startdate = db.Column(db.Date)
     enddate = db.Column(db.Date)
     visibility = db.Column(db.Boolean)
@@ -38,13 +38,13 @@ class campaign(db.Model):
     sponsor_name = db.Column(db.String(50), db.ForeignKey('sponsor.name'), nullable = False)
 
 class adreqs(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    desc = db.Column(db.String(50))
-    campaign_id = db.Column(db.Integer)
-    influencer_name = db.Column(db.String(50))
+    
+    name = db.Column(db.String(50),primary_key=True)
+    desc = db.Column(db.String(200))
+    campaign_name = db.Column(db.Integer, db.ForeignKey('campaign.name'))
+    influencer_name = db.Column(db.String(50), db.ForeignKey('influencer.name'), nullable = True)
     amount = db.Column(db.Integer)
-    requirements = db.Column(db.String(50))
+    requirements = db.Column(db.String(200))
     status = db.Column(db.String(50))
     
 
@@ -55,6 +55,8 @@ with app.app_context():
         admin = admin(name='admin', passwd= 'admin')
         db.session.add(admin)
         db.session.commit()
+
+
 
 
 
@@ -69,9 +71,13 @@ def login():
 
 @app.route('/login', methods=['POST'])
 def login_to():
+    
     username = request.form.get('username')
     password = request.form.get('upassword')
     category = request.form.get('role')
+    global current_user
+    current_user = username
+    
     if category == 'Influencer':
         user = influencer.query.filter_by(name=username, passwd=password).first()
         if user:
@@ -107,31 +113,102 @@ def iregister_to():
     db.session.commit()
     return redirect('/login')
 
+@app.route('/influencer')
+def influencer_main():
+    return render_template('influencer.html')
+
+@app.route('/influencer/stats')
+def influencer_stats():
+    pass
 
 
 
+##sponsor
 @app.route('/sregister')
 def sregister():
+    return render_template('sregister.html')
+
+@app.route('/sregister',methods=['POST'])
+def sregister_to():
     username=request.form.get('susername')
     password=request.form.get('spassword')
-    industry=request.form.get('sindustry')
+    industry=request.form.get('industry')
     user = sponsor(name=username,passwd=password,industry=industry)
     db.session.add(user)
     db.session.commit()
     return redirect('/login')
 
 
-@app.route('/influencer')
-def influencer_main():
-    return render_template('influencer.html')
+
 
 @app.route('/sponsor')
 def sponsor_main():
+    
+    
+
+
     return render_template('sponsor.html')
+
+@app.route('/sponsor/create_campaign')
+def create_campaign():
+    return render_template('create_campaign.html')
+
+@app.route('/sponsor/create_campaign', methods=['POST'])
+def create_campaign_post():
+    
+    name = request.form.get('name')
+    desc = request.form.get('desc')
+    startdate = datetime.datetime(int(request.form.get('start').split('-')[0]),int(request.form.get('start').split('-')[1]),int(request.form.get('start').split('-')[2]))
+    enddate = datetime.datetime(int(request.form.get('end').split('-')[0]),int(request.form.get('end').split('-')[1]),int(request.form.get('end').split('-')[2]))
+    visibility = True
+    goals = request.form.get('goal')
+    sponsor_name = current_user
+    campaignn = campaign(name=name,desc=desc,startdate=startdate,enddate=enddate,visibility=visibility,goals=goals,sponsor_name=sponsor_name)
+    db.session.add(campaignn)
+    db.session.commit()
+    return redirect('/sponsor')
+
+@app.route('/sponsor/create_ad_request')
+def create_ad_requests():
+    return render_template('create_ad_requests.html')
+
+@app.route('/sponsor/create_ad_requests',methods=['POST'])
+def create_ad_requests_post():
+    campaign_list = campaign.query.all()
+    
+    for campaigni in campaign_list:
+        campaing_namelist.append(campaigni.name)
+
+
+    name = request.form.get('name')
+    desc = request.form.get('desc')
+    campaign_name = request.form.get('campaigni')
+    influencer_name = None
+    amount = request.form.get('amount')
+    requirements = request.form.get('requirements')
+    status = 'Pending'
+    adreq = adreqs(name=name,desc=desc,campaign_name=campaign_name,influencer_name=influencer_name,amount=amount,requirements=requirements,status=status)
+    db.session.add(adreq)
+    db.session.commit()
+    return redirect('/sponsor')
+    
+
+@app.route('/sponsor/find_influencer')
+def find_inf():
+    pass
+
+@app.route('/sponsor/stats')
+def sponsor_stats():
+    pass
+
 
 @app.route('/admin')
 def admin_main():
     return render_template('admin.html')
+
+@app.route('/admin',methods=['POST'])
+def flag():
+    pass
 
 
 

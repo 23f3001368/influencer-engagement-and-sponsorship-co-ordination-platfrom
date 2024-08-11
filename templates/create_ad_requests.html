@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+{% include 'sponsor_nav.html'   %}
+{{campaign_list}}
+<form    method="POST">
+    <label for="name" class="form-label">Ad Request Name:</label>
+    <input type="text" id="name" name="name" class="form-control" required>
+    <label for="desc" class="form-label">Ad Request Description:</label>
+    <input type="text" id="desc" name="desc" class="form-control" required>
+    <label for="requires" class="form-label">Ad Request Requirements:</label>
+    <input type="text" id="requires" name="requires" class="form-control" required>
+    <label for="amount" class="form-label">Amount:</label>
+    <input type="text" id="amount" name="amount" class="form-control" required>
+    <label for="campaign" class="form-label">Select Campaign:</label>
+    <select id="campaign" name="campaign" class="form-control" required>
+        {% for a in campaign_namelist %}
+            <option value="{{a}}">{{a}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Submit" class="btn btn-success">
+    
+{% endblock %}
