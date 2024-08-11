@@ -51,8 +51,12 @@ class adreqs(db.Model):
 
 with app.app_context():
     db.create_all()
+    if not admin.query.filter_by(name='admin').first():
+        admin = admin(name='admin', passwd= 'admin')
+        db.session.add(admin)
+        db.session.commit()
 
-#add admin
+
 
 # controllers
 @app.route('/')
